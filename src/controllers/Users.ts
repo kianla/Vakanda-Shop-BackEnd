@@ -17,18 +17,16 @@ const sql = postgres({
 });
 
 export const createUser: RequestHandler = async(req, res, next) => {
-  const Username = (req.body.username as { text: string }).text;
-  const email = (req.body.username as { text: string }).text;
-  const address = (req.body.username as { text: string }).text;
-  const join_date = (req.body.username as { text: Date }).text;
-  const password = (req.body.username as { text: string }).text;
-  const type = (req.body.username as { text: string }).text;
-
-  const newUser = new Users(1,Username,email,address,join_date,password,type);
-  await sql`INSERT INTO shopUser (userName, email, address, join_date, password, type)
-  VALUES (${Username}, ${email}, ${address}, ${join_date}, ${password}, ${type});
-  `;
-  res.status(204).json({ message: 'Created the User.', createdTodo: newUser });
+  const Username = (req.body as { userName:string }).userName;
+  const email = (req.body as { email:string}).email;
+  const address = (req.body as { address: string }).address;
+  const join_date = (req.body as { join_date: string }).join_date;
+  const password = (req.body as { password: string }).password;
+  const type = (req.body as { type: string }).type;
+  let date: Date = new Date(join_date);  
+  const newUser = new Users(1,Username,email,address,date,password,type);
+  await sql`INSERT INTO shopUser (userName, email, address, join_date, password, type) VALUES (${newUser.username}, ${newUser.email}, ${newUser.address}, ${newUser.join_date}, ${newUser.password}, ${newUser.type})`;
+  res.status(201).send(newUser);
 };
 
 export const getUser: RequestHandler = async(req, res, next) => {
@@ -46,15 +44,15 @@ export const getUsers: RequestHandler = async(req, res, next) => {
   res.send(users);
 };
 
-export const updateUser: RequestHandler<{ id: string }> = async(req, res, next) => {
+export const updateUser: RequestHandler<{ id: number }> = async(req, res, next) => {
   const id = +req.params.id;
-
   const user = await sql`SELECT * FROM shopUser where id = ${id}`;
   if(user.count > 0) {
-  const address = (req.body.username as { text: string }).text;
-  const password = (req.body.username as { text: string }).text;
+  const address = (req.body as { address: string }).address;
+  const password = (req.body as { password: string }).password;
   await sql`UPDATE shopUser SET address = ${address}  WHERE id = ${id}`;
   const user = await sql`UPDATE shopUser SET password = ${password}  WHERE id = ${id} RETURNING *`;
+  console.log(user);
   res.send(user);
   }
   else {
@@ -62,14 +60,4 @@ export const updateUser: RequestHandler<{ id: string }> = async(req, res, next) 
   }
 };
 
-export const deleteUser: RequestHandler = async(req, res, next) => {
-  const id = +req.params.id;
-    const user = await sql`SELECT * FROM shopUser where id = ${id}`;
-    if(user.count > 0) {
-    const  user = await sql`DELETE FROM shopUser WHERE id = ${id} RETURNING *`;
-    res.send(user);
-    }
-    else {
-        res.status(404).send({error:'The user is NOT Found!'});
-    }
-};
+
