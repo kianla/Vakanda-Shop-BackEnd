@@ -60,10 +60,13 @@ export const updateUser: RequestHandler<{ id: number }> = async(req, res, next) 
 };
 
 export const getUserByEmail: RequestHandler = async(req, res, next) => {
-  const username = req.params.username;
-  const password = req.params.password;
-
-  const user = await sql`SELECT * FROM shopUser where email = ${username}`;
+  const email = (req.query as { email:string}).email;
+  const password = (req.query as { password: string }).password;
+  console.log(req.query);
+  console.log(email);
+  console.log(password);
+  const user = await sql`SELECT * FROM shopUser where email = ${email}`;
+  console.log(user);
   if(user[0]) {
     if (isPasswordValid(user[0].password, password)){
       res.send(user);
