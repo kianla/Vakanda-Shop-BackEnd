@@ -1,15 +1,15 @@
 import { Router } from 'express';
 
-import { createUser, getUser,getUsers, updateUser } from '../controllers/Item';
+import { createItem, getItem,getItems, updateItem } from '../controllers/Items';
 
 const router = Router();
 
-router.post('/', createUser);
+router.post('/', createItem);
 
-router.get('/:id', getUser);
+router.get('/:id', getItem);
 
-router.get('/', getUsers);
+router.get('/', getItems);
 
-router.patch('/:id', updateUser);
+router.patch('/:id', updateItem);
 
 export default router;

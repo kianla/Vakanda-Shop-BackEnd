@@ -17,16 +17,15 @@ const sql = postgres({
 });
 
 export const createUser: RequestHandler = async(req, res, next) => {
-  const Username = (req.body as { userName:string }).userName;
+  const Username = (req.body as { username:string }).username;
   const email = (req.body as { email:string}).email;
   const address = (req.body as { address: string }).address;
-  const join_date = (req.body as { join_date: string }).join_date;
   const password = (req.body as { password: string }).password;
   const type = (req.body as { type: string }).type;
-  let date: Date = new Date(join_date);  
-  const newUser = new Users(1,Username,email,address,date,password,type);
+  const join_date = new Date();
+  const newUser = new Users(1,Username,email,address,join_date,password,type);
   await sql`INSERT INTO shopUser (userName, email, address, join_date, password, type) VALUES (${newUser.username}, ${newUser.email}, ${newUser.address}, ${newUser.join_date}, ${newUser.password}, ${newUser.type})`;
-  res.status(201).send(newUser);
+  res.status(200).send(newUser);
 };
 
 export const getUser: RequestHandler = async(req, res, next) => {
@@ -59,5 +58,25 @@ export const updateUser: RequestHandler<{ id: number }> = async(req, res, next) 
       res.status(404).send({error:'The user is NOT Found!'});
   }
 };
+
+export const getUserByEmail: RequestHandler = async(req, res, next) => {
+  const username = req.params.username;
+  const password = req.params.password;
+
+  const user = await sql`SELECT * FROM shopUser where email = ${username}`;
+  if(user[0]) {
+    if (isPasswordValid(user[0].password, password)){
+      res.send(user);
+    } else {
+      res.status(404).send({error:'The password is NOT Match!'});
+    }
+  } else {
+      res.status(404).send({error:'The user is NOT Found!'});
+  }
+};
+
+const isPasswordValid = (dataPassword: string, currentPassword: string) => {
+  return (dataPassword == currentPassword);
+}
 
 
