@@ -48,9 +48,10 @@ export const getItems: RequestHandler = async(req, res, next) => {
     res.send(items);
   } else if (orderId !== null && orderId !== undefined) {
     const items = await sql`SELECT 
-                            i.*
+                            i.*, oi.id 
                             FROM 
                                 "order" AS o
+                            
                             INNER JOIN 
                                 "order-item" AS oi ON o.id = oi.order_id
                             INNER JOIN 
@@ -58,6 +59,7 @@ export const getItems: RequestHandler = async(req, res, next) => {
                             WHERE 
                                 o.id = ${orderId}`;   
     res.send(items);
+    console.log("t");
   }
    else {
     const items = await sql`SELECT * FROM item`;

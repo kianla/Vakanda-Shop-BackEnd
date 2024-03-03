@@ -1,12 +1,14 @@
 import { Router } from 'express';
 
-import { createOrder, getOrder,getOrders, updateOrder, getOrderByUserId } from '../controllers/Orders';
+import { createOrder, getOrdersByUserId,getOrder,getOrders, updateOrder, getOrderByUserId } from '../controllers/Orders';
 
 const router = Router();
 
 router.post('/', createOrder);
 
 router.get('/lastorder', getOrderByUserId);
+
+router.get('/UserOrders', getOrdersByUserId);
 
 router.get('/:id', getOrder);
 

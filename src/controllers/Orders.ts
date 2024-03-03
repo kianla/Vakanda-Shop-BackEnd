@@ -43,7 +43,7 @@ export const getOrders: RequestHandler = async(req, res, next) => {
 };
 
 export const getOrderByUserId: RequestHandler = async(req, res, next) => {
-  const userId = req.query.userId;
+  let userId  = req.query.userId as any;
   if (userId !== null && userId !== undefined) {
     const order = await sql`SELECT * FROM "order" O where O.user_id = ${userId} AND O.registration_date IS NULL`;
     if(order.count > 0) {
@@ -57,7 +57,20 @@ export const getOrderByUserId: RequestHandler = async(req, res, next) => {
   }
 };
 
+export const getOrdersByUserId: RequestHandler = async(req, res, next) => {
+  let userId  = req.query.userId as any;
+  if (userId !== null && userId !== undefined) {
+    const orders = await sql`SELECT * FROM "order" O where O.user_id = ${userId}`;
+    if(orders.count > 0) {
+        res.send(orders);
+    } 
+  } else {
+    res.status(404).send({error:'Bad Request!'});
+  }
+};
+
 export const updateOrder: RequestHandler<{ id: number }> = async(req, res, next) => {
+  try{
   const id = +req.params.id;
   const order = await sql`SELECT * FROM "order" where id = ${id}`;
   if(order.count > 0) {
@@ -71,5 +84,7 @@ export const updateOrder: RequestHandler<{ id: number }> = async(req, res, next)
   else {
       res.status(404).send({error:'The user is NOT Found!'});
   }
+}
+catch{}
 };
 

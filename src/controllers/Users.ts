@@ -23,7 +23,9 @@ export const createUser: RequestHandler = async(req, res, next) => {
   const password = (req.body as { password: string }).password;
   const type = (req.body as { type: string }).type;
   const join_date = new Date();
+ 
   const newUser = new Users(1,Username,email,address,join_date,password,type);
+  console.log(newUser);
   await sql`INSERT INTO shopUser (userName, email, address, join_date, password, type) VALUES (${newUser.username}, ${newUser.email}, ${newUser.address}, ${newUser.join_date}, ${newUser.password}, ${newUser.type})`;
   res.status(200).send(newUser);
 };
@@ -62,11 +64,8 @@ export const updateUser: RequestHandler<{ id: number }> = async(req, res, next) 
 export const getUserByEmail: RequestHandler = async(req, res, next) => {
   const email = (req.query as { email:string}).email;
   const password = (req.query as { password: string }).password;
-  console.log(req.query);
-  console.log(email);
-  console.log(password);
   const user = await sql`SELECT * FROM shopUser where email = ${email}`;
-  console.log(user);
+  
   if(user[0]) {
     if (isPasswordValid(user[0].password, password)){
       res.send(user);
