@@ -23,8 +23,9 @@ export const createItem: RequestHandler = async(req, res, next) => {
   const item_count = (req.body as { item_count: number }).item_count;
   const price = (req.body as { price: number }).price;
   const group_id = (req.body as { group_id: number }).group_id;
-
+  console.log(req);
   const newItem = new Items(1,name,discription,photo,item_count,price,group_id);
+  console.log(newItem);
   await sql`INSERT INTO item (name, discription, photo, item_count, price, group_id) VALUES
    (${newItem.name}, ${newItem.discription}, ${newItem.photo}, ${newItem.item_count}, ${newItem.price}, ${newItem.group_id})`;
   res.status(201).send(newItem);

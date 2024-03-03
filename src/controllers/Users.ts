@@ -31,10 +31,12 @@ export const createUser: RequestHandler = async(req, res, next) => {
 };
 
 export const getUser: RequestHandler = async(req, res, next) => {
-  const id = +req.params.id;
+  console.log(req.query);
+  const id = req.query.id;
   const user = await sql`SELECT * FROM shopUser where id = ${id}`;
   if(user.count > 0) {
       res.send(user);
+      console.log(user);
   } else {
       res.status(404).send({error:'The user is NOT Found!'});
   }
